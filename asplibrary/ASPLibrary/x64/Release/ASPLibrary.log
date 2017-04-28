@@ -1,0 +1,8 @@
+﻿  Model.cpp
+..\Model.cpp(1): fatal error C1083: Cannot open include file: 'Model.h': No such file or directory
+  Room.cpp
+..\Room.cpp(1): fatal error C1083: Cannot open include file: 'Room.h': No such file or directory
+  Wall.cpp
+..\Wall.cpp(1): fatal error C1083: Cannot open include file: 'Wall.h': No such file or directory
+  Worldobject.cpp
+..\Worldobject.cpp(1): fatal error C1083: Cannot open include file: 'Worldobject.h': No such file or directory

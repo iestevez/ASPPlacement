@@ -1,0 +1,6 @@
+﻿  Room.cpp
+..\asplibrary\Room.cpp(143): warning C4101: 'literal1': unreferenced local variable
+..\asplibrary\Room.cpp(142): warning C4101: 'body': unreferenced local variable
+..\asplibrary\Room.cpp(231): warning C4101: 'exception': unreferenced local variable
+  Worldobject.cpp
+  ASPTest.vcxproj -> C:\Users\josei_000\Documents\desarrollo\ASPPlacement\Release\ASPLibrary.lib
