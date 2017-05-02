@@ -12,7 +12,7 @@ bool UObjectProceduralFunctionLibrary::StartSession(const int32 val) {
 	return true;
 }
 
-bool UObjectProceduralFunctionLibrary::Placement(float unit,float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, TArray<FSObjectDescription> &newlobjects) {
+bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, TArray<FSObjectDescription> &newlobjects) {
 
 	
 
@@ -39,8 +39,8 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float RSx,float RSy,
 		vobjects.push_back(std::move(pwobj)); // Agregamos al vector.
 	}
 
-	int dimh = floor(RSx / unit); // Dimensiones de la habitación en unidades ASPLibrary
-	int dimv = floor(RSy / unit);
+	int dimh = floor((RSx - 2*WWidth) / unit); // Dimensiones de la habitación en unidades ASPLibrary
+	int dimv = floor((RSy - 2*WWidth) / unit);
 	UWall pwalla = UWall(new Wall(Wall::Name::a, dimh)); // Creamos los muros ASPLibrary de la habitación
 	UWall pwallb = UWall(new Wall(Wall::Name::b, dimv));
 	UWall pwallc = UWall(new Wall(Wall::Name::c, dimh));

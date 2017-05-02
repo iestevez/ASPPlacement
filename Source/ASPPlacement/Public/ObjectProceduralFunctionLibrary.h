@@ -38,6 +38,7 @@ struct FSObjectDescription {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	int32 id;
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	UStaticMesh *StaticMesh;
 
@@ -89,7 +90,7 @@ public:
 		static bool StartSession(const int32 value);
 		
 		UFUNCTION(BlueprintCallable, Category = "Placement")
-	    static  bool Placement(float unit,float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, TArray<FSObjectDescription> &newlobjects );
+	    static  bool Placement(float unit, float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, TArray<FSObjectDescription> &newlobjects );
 
 private:
 
