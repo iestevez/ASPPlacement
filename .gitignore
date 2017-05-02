@@ -17,7 +17,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-!*.dll
+#*.dll
 
 # Fortran module files
 *.mod
@@ -50,6 +50,7 @@ SourceArt/**/*.tga
 
 # Binary Files
 Binaries/*
+!Binaries/**/clingo.dll
 
 # Builds
 Build/*
