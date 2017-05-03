@@ -30,16 +30,24 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 		
 		FSObjectDescription odesc;
 		odesc = *ObjectIterator;
-		newlobjects.Add(odesc); // Copiamos en el objeto en la lista de salida
-		std::list<int> ldim;
-		UWorldobject pwobj = UWorldobject(new Worldobject(id)); //Creamos el objeto
 		
-		pwobj->setdim(ceil(odesc.dimensions.X*odesc.scale/unit),ceil(odesc.dimensions.Y*odesc.scale/unit),ceil(odesc.dimensions.Z*odesc.scale/unit)); //Asignamos las dimensiones teniendo en cuenta la escala
-		pwobj->settowall(facetolibface(odesc.objectFaceToWall)); //Asignamos la pared a la que debe circunscribirse el objeto
-		vobjects.push_back(std::move(pwobj)); // Agregamos al vector.
+		newlobjects.Add(odesc); // Copiamos en el objeto en la lista de salida
+		newlobjects.Last().liobjects = TArray<FSObjectInstanceDescription>(); // En la nueva lista no hay objetos instanciados
+		std::list<int> ldim;
+		TArray<FSObjectInstanceDescription> liobjects = odesc.liobjects;
+		int32 iid = 0;
+		for (auto ObjectInstanceIterator = liobjects.CreateIterator(); (iid<MAXOBJECTINSTANCES) && ObjectInstanceIterator; ObjectInstanceIterator++) {
+			
+			UWorldobject pwobj = UWorldobject(new Worldobject((id-1)*MAXOBJECTINSTANCES+iid)); //Creamos el objeto
+			++iid;
+			pwobj->setdim(ceil(odesc.dimensions.X*odesc.scale / unit), ceil(odesc.dimensions.Y*odesc.scale / unit), ceil(odesc.dimensions.Z*odesc.scale / unit)); //Asignamos las dimensiones teniendo en cuenta la escala
+			pwobj->settowall(facetolibface(odesc.CtrFaceToWall)); //Asignamos la pared a la que debe circunscribirse el objeto
+			vobjects.push_back(std::move(pwobj)); // Agregamos al vector.
+		}
+		
 	}
 
-	int dimh = floor((RSx - 2*WWidth) / unit); // Dimensiones de la habitación en unidades ASPLibrary
+	int dimh = floor((RSx - 2*WWidth) / unit); // Dimensiones de la habitación en unidades ASPLibrary (restamos anchura del muro)
 	int dimv = floor((RSy - 2*WWidth) / unit);
 	UWall pwalla = UWall(new Wall(Wall::Name::a, dimh)); // Creamos los muros ASPLibrary de la habitación
 	UWall pwallb = UWall(new Wall(Wall::Name::b, dimv));
@@ -52,9 +60,9 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 	for (auto CtrIterator = lwctrs.CreateIterator(); CtrIterator; CtrIterator++) {
 		FSWallConstraint ctrwall = *CtrIterator;
 		Wall::Name wname = walltolibwall(ctrwall.wall);
-		ctr[0] = (int)(std::ceil(ctrwall.placementconstraint.X / unit)); //Inicio de la restricción
-		ctr[1] = (int)(std::ceil(ctrwall.placementconstraint.Y / unit)); // Fin de la restricción
-		ctr[2] = (int)(std::ceil(ctrwall.placementconstraint.Z / unit)); //Altura de la restricción
+		ctr[0] = (std::floor(ctrwall.placementconstraint.X / unit)); //Inicio de la restricción
+		ctr[1] = (std::ceil(ctrwall.placementconstraint.Y / unit)); // Fin de la restricción
+		ctr[2] = (std::floor(ctrwall.placementconstraint.Z / unit)); //Altura de la restricción
 
 		switch (wname) {
 
@@ -104,7 +112,7 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 		FEFaces protation=FEFaces::None;
 		FEWalls pwall = FEWalls::None;
 		
-		int32 idobject = (*it)->getid();
+		int32 idobject = ((*it)->getid() / MAXOBJECTINSTANCES)+1;
 		Worldobject::Placement p = (*it)->getplacement();
 		int32 x = p.x;
 		int32 y = p.y;
@@ -148,13 +156,38 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 			pwall = FEWalls::None;
 		}
 
+		//FSObjectInstanceDescription *tempstr = new FSObjectInstanceDescription;
+		FSObjectInstanceDescription tempstr;
+		tempstr.position.X = pposition.X;
+		tempstr.position.Y = pposition.Y;
+		tempstr.position.Z = 0;
+		tempstr.rotation = protation;
+		tempstr.wall = pwall;
+		tempstr.distanceFromLeftCorner = ppos;
+
+		newlobjects[idobject - 1].liobjects.Add(tempstr);
+
+		/*
 		newlobjects[idobject-1].position.X = pposition.X;
 		newlobjects[idobject-1].position.Y = pposition.Y;
 		newlobjects[idobject-1].rotation = protation;
 		newlobjects[idobject - 1].wall = pwall;
 		newlobjects[idobject - 1].distanceFromLeftCorner = ppos;
-		
+		*/
 	}
+
+	// Destrucción!
+	for (auto ObjectIterator = lobjects.CreateIterator(); ObjectIterator; ObjectIterator++) { // Recorremos la lista de objetos versión UE4 recibida por la función
+
+
+
+		FSObjectDescription odesc;
+		odesc = *ObjectIterator;
+		odesc.liobjects.Empty();
+
+
+	}
+	lobjects.Empty();
 	return true;
 }
 

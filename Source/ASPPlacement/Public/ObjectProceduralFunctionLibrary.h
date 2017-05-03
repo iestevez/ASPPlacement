@@ -12,6 +12,9 @@
  * 
  */
 
+#define MAXOBJECTS 1000
+#define MAXOBJECTINSTANCES 1000
+
 UENUM(BlueprintType)
 enum class FEWalls : uint8 {
 	WallA UMETA(DisplayName="WallA"),
@@ -30,6 +33,31 @@ enum class FEFaces : uint8 {
 	None UMETA(DisplayName = "None")
 };
 
+
+USTRUCT(BlueprintType)
+struct FSObjectInstanceDescription {
+
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	FVector position;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	FEWalls wall;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	int32 distanceFromLeftCorner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	FEFaces rotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	FEFaces objectFaceToWall;
+
+
+};
+
+
 USTRUCT(BlueprintType)
 struct FSObjectDescription {
 
@@ -39,6 +67,9 @@ struct FSObjectDescription {
 	int32 id;
 
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="LibObjectDescription")
+	TArray<FSObjectInstanceDescription> liobjects;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	UStaticMesh *StaticMesh;
 
@@ -61,6 +92,9 @@ struct FSObjectDescription {
 	FEFaces objectFaceToWall;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
+	FEFaces CtrFaceToWall; //Constraint: object face to wall
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	float scale;
 	
 
@@ -78,6 +112,7 @@ struct FSWallConstraint {
 	FVector placementconstraint;
 
 };
+
 
 UCLASS()
 class ASPPLACEMENT_API UObjectProceduralFunctionLibrary : public UBlueprintFunctionLibrary
