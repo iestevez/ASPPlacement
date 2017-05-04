@@ -1,17 +1,6 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ASPTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Model.cpp
-..\asplibrary\Model.cpp(44): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-..\asplibrary\Model.cpp(50): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-..\asplibrary\Model.cpp(57): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-..\asplibrary\Model.cpp(63): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
   Room.cpp
-..\asplibrary\Room.cpp(152): warning C4101: 'literal1': unreferenced local variable
-..\asplibrary\Room.cpp(151): warning C4101: 'body': unreferenced local variable
-..\asplibrary\Room.cpp(240): warning C4101: 'exception': unreferenced local variable
-  test.cpp
-..\asplibrary\test.cpp(21): warning C4101: 'dummy': unreferenced local variable
-  Wall.cpp
-  Worldobject.cpp
-  ASPTest.vcxproj -> D:\desarrollo\ue4\ASPPlacement\x64\Release\ASPLibrary.lib
+..\asplibrary\Room.cpp(152): warning C4101: 'literal1': variable local sin referencia
+..\asplibrary\Room.cpp(151): warning C4101: 'body': variable local sin referencia
+..\asplibrary\Room.cpp(240): warning C4101: 'exception': variable local sin referencia
+  ASPTest.vcxproj -> D:\desarrollos\ue4projects\ASPPlacement\x64\Release\ASPLibrary.lib

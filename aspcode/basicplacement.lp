@@ -79,6 +79,13 @@ fitroom(O):-object(O),effectivearea(O,X1,Y1,X2,Y2),X1>=0,Y1>=0, lenw(a,La),lenw(
 
 % Determining overlaping
 % ----------------------
+
+% Simple overlapping.
+inrange(X):-X=0..L,dimroom(h,L).
+inrange(X):-X=0..L,dimroom(v,L).
+overlap1d(S1,E1,S2,E2):-inrange(S1),inrange(E1),inrange(S2),inrange(E2),S2>=S1,S2<=E1.
+overlap1d(S1,E1,S2,E2):-inrange(S1),inrange(E1),inrange(S2),inrange(E2),S1>=S2,S1<=E2.
+
 % overlaphor(O1,O2) determines if there is an overlap in the horizontal dimensions between object O1 and object O2.
 overlaphor(O1,O2):-effectivearea(O1,X11,_,X12,_),effectivearea(O2,X21,_,X22,_),X12>=X21,X12<=X22.
 overlaphor(O1,O2):-effectivearea(O1,X11,_,X12,_),effectivearea(O2,X21,_,X22,_),X22>=X11,X22<=X12.
@@ -122,7 +129,9 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 % Avoid overlaping of any two objects.
 :-object(O1),object(O2), placement(O1,_,_,_), placement(O2,_,_,_),overlap(O1,O2).
 % Use maxheight constraints
-%:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),overlap1d(OP,OP+LF,S,E),HO>O.
+:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP>=E,HO>O.
+:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>O.
+
 
 % Weak constraint.
 % ----------------
