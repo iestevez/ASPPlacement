@@ -176,6 +176,7 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 		*/
 	}
 
+	/*
 	// Destrucción!
 	for (auto ObjectIterator = lobjects.CreateIterator(); ObjectIterator; ObjectIterator++) { // Recorremos la lista de objetos versión UE4 recibida por la función
 
@@ -188,6 +189,7 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 
 	}
 	lobjects.Empty();
+	*/
 	return true;
 }
 
