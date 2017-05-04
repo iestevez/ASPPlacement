@@ -39,6 +39,8 @@ struct FSObjectInstanceDescription {
 
 	GENERATED_USTRUCT_BODY()
 
+	FSObjectInstanceDescription() : wall(FEWalls::WallA), rotation(FEFaces::None), objectFaceToWall(FEFaces::None) {}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	FVector position;
 
@@ -63,6 +65,8 @@ struct FSObjectDescription {
 
 	GENERATED_USTRUCT_BODY()
 
+	FSObjectDescription() : id(0), CtrFaceToWall(FEFaces::None), scale(1) {}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	int32 id;
 
@@ -75,21 +79,7 @@ struct FSObjectDescription {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	FVector dimensions;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
-	FVector position;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
-	FEWalls wall;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
-	int32 distanceFromLeftCorner;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
-	FEFaces rotation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
-	FEFaces objectFaceToWall;
+		
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LibObject Description")
 	FEFaces CtrFaceToWall; //Constraint: object face to wall
