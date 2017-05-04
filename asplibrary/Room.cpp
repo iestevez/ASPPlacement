@@ -686,8 +686,8 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 % Avoid overlaping of any two objects.
 :-object(O1),object(O2), placement(O1,_,_,_), placement(O2,_,_,_),overlap(O1,O2).
 % Use maxheight constraints
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP<=E,HO>O.
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>O.
+:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP<=E,HO>H.
+:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>H.
 
 % Weak constraint.
 % ----------------
