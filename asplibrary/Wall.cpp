@@ -15,11 +15,9 @@ VMaxareas.push_back(el);
 
 Wall::Wall(Name ori, int l, std::initializer_list<std::list<int>> ma_data): length(l), orientation(ori) {
 		for(std::list<int> sl : ma_data){
-			int* na = new int[3];
-			int* np;
-			np=na;
+			std::vector<int> na;
 			for(auto x : sl)
-				*(np++)=x;
+				na.push_back(x);
 			VMaxareas.push_back(na);
 		}
 }
@@ -35,9 +33,8 @@ void Wall::set_length(int l){ length=l; };
 void Wall::set_orientation(Wall::Name ori){orientation=ori;};
 
 void Wall::delallareas() {
-		for(auto ma : VMaxareas){
-			delete(ma);
-		}
+	VMaxareas.empty();
+		
 
 }
 
@@ -54,7 +51,7 @@ std::cout<<"Wall dimensions: "<<length<<std::endl;
 if(VMaxareas.size()>0){
 	std::cout<<"Max. height constraints"<<std::endl;
 	for(auto m : VMaxareas)
-		std::cout<<"Start: "<<(*m++)<<"End: "<<(*m++)<<"Max. height: "<<*m<<std::endl;
+		std::cout<<"Start: "<<m.at(0)<<"End: "<<m.at(1) <<"Max. height: "<<m.at(2)<<std::endl;
 
 }
 }

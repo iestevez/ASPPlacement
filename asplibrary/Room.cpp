@@ -2,23 +2,39 @@
 #include "clingo.h"
 #include <iostream>
 // Constructores
-Room::Room(){
+Room::Room(int limit){
 
+	prepareclingooptions(limit);
 
 }
 
-Room::Room(int h, int v) : dimh(h), dimv(v) {};
+Room::~Room() {
 
-Room::Room(std::vector<std::unique_ptr<Wall>>& wlist){
+	if (cl_argv[2]) {
+		delete(cl_argv[2]);
+	}
+	delete(cl_argv);
 
+}
+
+Room::Room(int h, int v, int limit) : dimh(h), dimv(v) {
+
+	prepareclingooptions(limit);
+};
+
+Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, int limit){
+
+	prepareclingooptions(limit);
 for(auto& w : wlist)
 	VWalls.push_back(std::move(w));
 
 wlist.erase(wlist.cbegin(),wlist.cend());
 }
 
-Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, std::vector<std::unique_ptr<Worldobject>>& olist){
+Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, std::vector<std::unique_ptr<Worldobject>>& olist, int limit){
 
+	
+prepareclingooptions(limit);
 for(auto& w : wlist)
 	VWalls.push_back(std::move(w));
 
@@ -28,6 +44,27 @@ for(auto& o : olist)
 	VObjects.push_back(std::move(o));
 
 olist.erase(olist.cbegin(),olist.cend());
+
+}
+
+void Room::prepareclingooptions(int limit) {
+	cl_argv = new (char*[3]);
+	cl_argv[0] = "-t";
+	cl_argv[1] = "2";
+	cl_argv[2] = nullptr;
+	cl_argc = 2;
+	if (limit > 0) {
+
+		std::string str_limit("--solve-limit=");
+		str_limit.append(std::to_string(limit));
+		cl_argv[2] = new char [str_limit.length()] ;
+		strcpy(cl_argv[2], str_limit.c_str());
+		cl_argc = 3;
+	}
+
+
+	
+	
 
 }
 
@@ -86,9 +123,9 @@ std::cout<<"After adding program sentence"<<std::endl;
 return true;
 
 }
-void Room::placeObjects(){
+bool Room::placeObjects(){
 
-
+	bool result = false;
 clingo_control_t *ctl = nullptr;
 clingo_part_t parts[] ={{"base",NULL,0}};
 clingo_solve_result_bitset_t solve_ret;
@@ -97,6 +134,8 @@ clingo_solve_result_bitset_t solve_ret;
 for(auto& o: VObjects)
 	o->setunplaced(); 
 // Second: prepare clingo control
+
+
 if(!clingo_control_new(cl_argv,cl_argc,NULL,NULL,20, &ctl) !=0) 
 	throw std::runtime_error {"Clingo error: creation of control failed"};
 
@@ -217,9 +256,14 @@ if(!clingo_control_ground(ctl,parts,1,NULL,NULL))
 if(!clingo_control_solve(ctl,on_model,this,NULL,0,&solve_ret))
 	throw std::runtime_error {"Clingo error: solving grounded model"};
 
+if (solve_ret & clingo_solve_result_satisfiable)
+result = true;
+else
+result = false;
 
 if(ctl) {clingo_control_free(ctl);}
 
+return result;
 
 }
 
@@ -227,6 +271,7 @@ bool Room::on_model(clingo_model_t* model, void* object, bool* goon){
 
 bool ret=true;
 *goon = true;
+((Room *)object)->overlapFlag = false; //Initialize to false to detect overlap
 std::cout<<"Modelo encontrado"<<std::endl;
 clingo_symbol_t *atoms = NULL; //Symbols to be retrieved
 size_t atoms_n; //Number of retrieved symbols
@@ -246,9 +291,11 @@ if (!clingo_model_symbols(model, clingo_show_type_shown, atoms, atoms_n))
 	throw std::runtime_error {"Clingo error: retrieving symbols from obtained model"};
 // Create signature uf function placement
 clingo_signature_t sig_placement;
+clingo_signature_t sig_overlap;
 if(!clingo_signature_create("placement",4,true,&sig_placement))
 	throw std::runtime_error {"Clingo error: creating signature for placement predicate"};
-
+if (!clingo_signature_create("overlap", 2, true, &sig_overlap))
+throw std::runtime_error{ "Clingo error: creating signature for overlap predicate" };
 size_t str_n=0;
 char* str=nullptr;
 clingo_symbol_t const *it, *ie;
@@ -283,6 +330,9 @@ if(!clingo_symbol_name(*it,&sname))
 clingo_signature_t symbolsignature;
 if(!clingo_signature_create(sname,4,true,&symbolsignature))
 	throw std::runtime_error {"Clingo error: creating expected signature"};
+
+if (clingo_signature_is_equal_to(sig_overlap, symbolsignature))
+	((Room *)object)->overlapFlag = true;
 
 if(clingo_signature_is_equal_to(sig_placement,symbolsignature)){
 	std::cout<<"Es un placement!"<<std::endl;
@@ -490,9 +540,9 @@ if(!clingo_symbol_create_function("wall",swall_args,1,true, &swall))
 VCSymbols.push_back(swall);
 for(auto ma : wall->VMaxareas){
 	int start,end,height;
-	start = *ma;	
-	end = *(ma+1);
-	height = *(ma +2);
+	start = ma.at(0);	
+	end = ma.at(1);
+	height = ma.at(2);
 	clingo_symbol_t sstart,send,sheight;
 	clingo_symbol_create_number(start,&sstart);
 	clingo_symbol_create_number(end,&send);
@@ -557,8 +607,7 @@ for(auto& w: VWalls)
 }
 
 
-const char* Room::cl_argv[3]={"--models","50"};
-const int Room::cl_argc=3;
+
 const char* Room::baseprogram=R"ZXSP(
 %wall(a;b;c;d).
 
@@ -698,8 +747,7 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 %:-object(O),wall(W),rotation(R),lenw(W,L),not placement(O,W,OP,R).
 %:-#count{placement(O,W,OP,R):object(O),wall(W),lenw(W,L),OP=0..L,rotation(R)}!=1.
 
-#show numobjects/1.
-#show effectivearea/5.
+#show overlap/2.
 #show placement/4.
 
 )ZXSP";

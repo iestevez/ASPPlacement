@@ -7,7 +7,7 @@
 class Wall {
 
 public:
-	typedef int* Maxarea_t;	
+	typedef std::vector<int> Maxarea_t;	
 	enum class Name {none=0,a=1,b=2,c=3,d=4};
 
 

@@ -12,7 +12,7 @@ bool UObjectProceduralFunctionLibrary::StartSession(const int32 val) {
 	return true;
 }
 
-bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, TArray<FSObjectDescription> &newlobjects) {
+bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, int32 nconflicts, bool &result, bool &overlapFlag,TArray<FSObjectDescription> &newlobjects) {
 
 	
 
@@ -56,13 +56,14 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 	
 	// Leemos las restricciones UE4 y se las añadimos al muro ASPLibrary que le corresponda.
 
-	int ctr[3];
+	
 	for (auto CtrIterator = lwctrs.CreateIterator(); CtrIterator; CtrIterator++) {
 		FSWallConstraint ctrwall = *CtrIterator;
 		Wall::Name wname = walltolibwall(ctrwall.wall);
-		ctr[0] = (std::floor(ctrwall.placementconstraint.X / unit)); //Inicio de la restricción
-		ctr[1] = (std::ceil(ctrwall.placementconstraint.Y / unit)); // Fin de la restricción
-		ctr[2] = (std::floor(ctrwall.placementconstraint.Z / unit)); //Altura de la restricción
+		std::vector<int> ctr;
+		ctr.push_back(std::floor(ctrwall.placementconstraint.X / unit)); //Inicio de la restricción
+		ctr.push_back(std::ceil(ctrwall.placementconstraint.Y / unit)); // Fin de la restricción
+		ctr.push_back(std::floor(ctrwall.placementconstraint.Z / unit)); //Altura de la restricción
 
 		switch (wname) {
 
@@ -92,7 +93,7 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 	vwalls.push_back(std::move(pwalld));
 
 	// Creamos la habitación asignándoles muros y objetos a ubicar.
-	Room myroom(vwalls, vobjects);
+	Room myroom(vwalls, vobjects,(int)nconflicts);
 
 	// Asignamos dimensiones generales a la habitación
 
@@ -101,10 +102,12 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 
 	// --------------> Aquí es donde se realiza todo el trabajo de ASPLibrary <--------------------------------------
 	
-	myroom.placeObjects();
+	result=myroom.placeObjects();
 
 	// -------------> Vaciamos la habitación de objetos y volcamos los objetos en el vector vobjects.
 	myroom.moveobjects(vobjects);
+
+	overlapFlag = myroom.overlapFlag;
 
 	// Modificamos la posición de los objetos.
 	for (std::vector<std::unique_ptr<Worldobject>>::iterator it = vobjects.begin(); it != vobjects.end(); ++it) {
