@@ -11,18 +11,37 @@ dimroom((h;v),16).
 %maxheight(c,7,10,0).
 
 % We have also objects.
-object(1..2).
+object(1..12).
 
 % Object dimension (all of them are cubes):
 % size/4: object id, hor. length, ver length. height
-size(1,1,1,1).
-size(2,2,2,1).
-%size(3,10,5,4).
+size(1,2,6,1).
+size(2,2,6,1).
+size(3,2,6,1).
+size(4,2,6,1).
+size(5,2,6,1).
+size(6,2,6,1).
+size(7,2,6,1).
+size(8,2,6,1).
+size(9,2,6,1).
+size(10,2,6,1).
+size(11,2,6,1).
+size(12,2,6,1).
 
 % Object sides that shoud be oriented towards the wall.
 % towall/2: ide object, side
-towall(1,c).
+towall(1,a).
 towall(2,a).
+towall(3,a).
+towall(4,a).
+towall(5,a).
+towall(6,a).
+towall(7,a).
+towall(8,a).
+towall(9,a).
+towall(10,a).
+towall(11,a).
+towall(12,a).
 
 % --------------------------------------------------------
 % Second section: problem definition (auxiliary, generation and constraints).
@@ -143,5 +162,5 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 %:-#count{placement(O,W,OP,R):object(O),wall(W),lenw(W,L),OP=0..L,rotation(R)}!=1.
 
 #show numobjects/1.
-#show effectivearea/5.
+%#show effectivearea/5.
 #show placement/4.
