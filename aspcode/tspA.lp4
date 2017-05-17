@@ -1,0 +1,21 @@
+{ cycle(X,Y): edge(X,Y) }==1:-node(X).
+{ cycle(X,Y): edge(X,Y) } == 1:- node(Y).
+
+reached(X) :- X=#min{Y : node(Y) }.
+reached(Y) :- cycle(X,Y), reached(X).
+
+:- node(Y), not reached(Y).
+
+#show cycle/2.
+
+outcost(X,C):-cost(X,_,C).
+
+order(X,C1,C2):- outcost(X,(C1;C2)),C1<C2,C<=C1: outcost(X,C),C<C2.
+
+% Coste de no elegir el camino con C1 a pesar de tener un coste inmediatamente inferior inferior.
+penalty(X,C1,C2-C1) :- order(X,C1,C2), cycle(X,Y),cost(X,Y,C2).
+% El resto de nodos no elegidos con costes inferiores se penalizan.
+penalty(X,C1,C2-C1):- order(X,C1,C2), penalty(X,C2,_).
+
+
+#minimize {D,X,C : penalty(X,C,D) }.

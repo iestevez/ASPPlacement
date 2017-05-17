@@ -5,43 +5,21 @@ dimroom((h;v),16).
 
 % Wall restricted areas:
 % maxheight/4: wall, start, end, max height
-%maxheight(a,2,5,3).
-%maxheight(a,7,10,0).
-%maxheight(c,2,5,3).
-%maxheight(c,7,10,0).
+maxheight(a,2,6,0).
+maxheight(a,11,13,1).
+maxheight(b,2,6,0).
+maxheight(b,11,13,1).
 
 % We have also objects.
-object(1..12).
+object(1..n).
 
 % Object dimension (all of them are cubes):
 % size/4: object id, hor. length, ver length. height
-size(1,2,6,1).
-size(2,2,6,1).
-size(3,2,6,1).
-size(4,2,6,1).
-size(5,2,6,1).
-size(6,2,6,1).
-size(7,2,6,1).
-size(8,2,6,1).
-size(9,2,6,1).
-size(10,2,6,1).
-size(11,2,6,1).
-size(12,2,6,1).
-
+size(1..n,2,6,3).
 % Object sides that shoud be oriented towards the wall.
 % towall/2: ide object, side
-towall(1,a).
-towall(2,a).
-towall(3,a).
-towall(4,a).
-towall(5,a).
-towall(6,a).
-towall(7,a).
-towall(8,a).
-towall(9,a).
-towall(10,a).
-towall(11,a).
-towall(12,a).
+%towall(1,c).
+towall(1..n,a).
 
 % --------------------------------------------------------
 % Second section: problem definition (auxiliary, generation and constraints).
@@ -84,26 +62,21 @@ dimface(O,F,L):-F=(b;d),verdim(O,L).
 % effectivearea/5. 1. Object 2,3. X1,Y1 coordinates. 4,5. X2,Y2 coordinates
 % Depends on object dimensions and object placement.
 % Notice that placement is defined as placement/4where 1. Object, 2. Wall, 3. Position at the wall. 4. Rotation.
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+L),Y1=0,Y2=H,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+H),Y1=0,Y2=L,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-L,X2=W,Y1=OP,Y2=OP+H,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-H,X2=W,Y1=OP,Y2=OP+L,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+L),X2=(Wa-OP),Y1=Wb-H,Y2=Wb,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+H),X2=(Wa-OP),Y1=Wb-L,Y2=Wb,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(a,W),X1=0,X2=L,Y1=OP,Y2=(OP+H),#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(a,W),X1=0,X2=H,Y1=OP,Y2=(OP+L),#false:R=(a;c).
 
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+L-1),Y1=0,Y2=H-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+H-1),Y1=0,Y2=L-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-L,X2=W-1,Y1=OP,Y2=OP+H-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-H,X2=W-1,Y1=OP,Y2=OP+L-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+L),X2=(Wa-1-OP),Y1=Wb-H,Y2=Wb-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+H),X2=(Wa-1-OP),Y1=Wb-L,Y2=Wb-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=L-1,Y1=W-(OP+H),Y2=W-1-OP,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=H-1,Y1=W-(OP+L),Y2=W-1-OP,#false:R=(a;c).
 % fitroom/1. Determines if object O at fitroom(O) fits at room. A placement is assumed for object O.
 fitroom(O):-object(O),effectivearea(O,X1,Y1,X2,Y2),X1>=0,Y1>=0, lenw(a,La),lenw(b,Lb),X2<=La,Y2<=Lb.
 
 % Determining overlaping
 % ----------------------
 
-% Simple overlapping.
-inrange(X):-X=0..L,dimroom(h,L).
-inrange(X):-X=0..L,dimroom(v,L).
-overlap1d(S1,E1,S2,E2):-inrange(S1),inrange(E1),inrange(S2),inrange(E2),S2>=S1,S2<=E1.
-overlap1d(S1,E1,S2,E2):-inrange(S1),inrange(E1),inrange(S2),inrange(E2),S1>=S2,S1<=E2.
 
 % overlaphor(O1,O2) determines if there is an overlap in the horizontal dimensions between object O1 and object O2.
 overlaphor(O1,O2):-effectivearea(O1,X11,_,X12,_),effectivearea(O2,X21,_,X22,_),X12>=X21,X12<=X22.
@@ -123,6 +96,17 @@ facetowall(O,b):-placement(O,W,_,W1),wall(W),oprot(W,3,W1).
 facetowall(O,c):-placement(O,W,_,W1),wall(W),oprot(W,2,W1).
 facetowall(O,d):-placement(O,W,_,W1),wall(W),oprot(W,1,W1).
 % ----------------------
+
+
+% Contact faces
+% contact(O,Wall,Face,Op)
+% Object O has face Face against wall Wall. Object position in wall Wall is given by Op (measured from left side wrt observer).
+contact(O,W1,W,OP):-placement(O,W1,OP,_),facetowall(O,W).
+contact(O,a,W,OP):-effectivearea(O,OP,0,_,_),placement(O,_,_,W).
+contact(O,b,W,OP):-effectivearea(O,_,OP,Wa-1,_),lenw(a,Wa),placement(O,_,_,R),oprot(R,1,W).
+contact(O,c,W,OP):-effectivearea(O,_,_,X2,Wb-1),lenw(a,Wa),lenw(b,Wb),OP=Wa-1-X2,placement(O,_,_,R),oprot(R,2,W).
+contact(O,d,W,OP):-effectivearea(O,0,_,_,Y2),placement(O,_,_,R),lenw(b,Wb),OP=Wb-1-Y2,oprot(R,3,W).
+
 
 % Determining if object fit at wall
 % --------------------------------
@@ -148,9 +132,8 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 % Avoid overlaping of any two objects.
 :-object(O1),object(O2), placement(O1,_,_,_), placement(O2,_,_,_),overlap(O1,O2).
 % Use maxheight constraints
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP>=E,HO>O.
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>O.
-
+:-object(O),contact(O,W,F,OP),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP<=E,HO>H.
+:-object(O),contact(O,W,F,OP),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>H.
 
 % Weak constraint.
 % ----------------
@@ -161,6 +144,6 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 %:-object(O),wall(W),rotation(R),lenw(W,L),not placement(O,W,OP,R).
 %:-#count{placement(O,W,OP,R):object(O),wall(W),lenw(W,L),OP=0..L,rotation(R)}!=1.
 
-#show numobjects/1.
-%#show effectivearea/5.
+#show effectivearea/5.
+#show overlap/2.
 #show placement/4.

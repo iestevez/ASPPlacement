@@ -677,14 +677,14 @@ dimface(O,F,L):-F=(b;d),verdim(O,L).
 % Depends on object dimensions and object placement.
 % Notice that placement is defined as placement/4where 1. Object, 2. Wall, 3. Position at the wall. 4. Rotation.
 
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+L),Y1=0,Y2=H,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+H),Y1=0,Y2=L,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-L,X2=W,Y1=OP,Y2=OP+H,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-H,X2=W,Y1=OP,Y2=OP+L,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+L),X2=(Wa-OP),Y1=Wb-H,Y2=Wb,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+H),X2=(Wa-OP),Y1=Wb-L,Y2=Wb,#false:R=(a;c).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=L,Y1=W-(OP+H),Y2=W-OP,#false:R=(b;d).
-effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=H,Y1=W-(OP+L),Y2=W-OP,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+L-1),Y1=0,Y2=H-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,a,OP,R),X1=OP,X2=(OP+H-1),Y1=0,Y2=L-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-L,X2=W-1,Y1=OP,Y2=OP+H-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,b,OP,R),lenw(a,W),X1=W-H,X2=W-1,Y1=OP,Y2=OP+L-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+L),X2=(Wa-1-OP),Y1=Wb-H,Y2=Wb-1,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,c,OP,R),lenw(a,Wa),lenw(b,Wb),X1=Wa-(OP+H),X2=(Wa-1-OP),Y1=Wb-L,Y2=Wb-1,#false:R=(a;c).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=L-1,Y1=W-(OP+H),Y2=W-1-OP,#false:R=(b;d).
+effectivearea(O,X1,Y1,X2,Y2):-object(O),size(O,L,H,_),placement(O,d,OP,R),lenw(b,W),X1=0,X2=H-1,Y1=W-(OP+L),Y2=W-1-OP,#false:R=(a;c).
 % fitroom/1. Determines if object O at fitroom(O) fits at room. A placement is assumed for object O.
 fitroom(O):-object(O),effectivearea(O,X1,Y1,X2,Y2),X1>=0,Y1>=0, lenw(a,La),lenw(b,Lb),X2<=La,Y2<=Lb.
 
@@ -711,6 +711,17 @@ facetowall(O,c):-placement(O,W,_,W1),wall(W),oprot(W,2,W1).
 facetowall(O,d):-placement(O,W,_,W1),wall(W),oprot(W,1,W1).
 % ----------------------
 
+
+% Contact faces
+% contact(O,Wall,Face,Op)
+% Object O has face Face against wall Wall. Object position in wall Wall is given by Op (measured from left side wrt observer).
+contact(O,W1,W,OP):-placement(O,W1,OP,_),facetowall(O,W).
+contact(O,a,W,OP):-effectivearea(O,OP,0,_,_),placement(O,_,_,W).
+contact(O,b,W,OP):-effectivearea(O,_,OP,Wa-1,_),lenw(a,Wa),placement(O,_,_,R),oprot(R,1,W).
+contact(O,c,W,OP):-effectivearea(O,_,_,X2,Wb-1),lenw(a,Wa),lenw(b,Wb),OP=Wa-1-X2,placement(O,_,_,R),oprot(R,2,W).
+contact(O,d,W,OP):-effectivearea(O,0,_,_,Y2),placement(O,_,_,R),lenw(b,Wb),OP=Wb-1-Y2,oprot(R,3,W).
+
+
 % Determining if object fit at wall
 % --------------------------------
 fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF)<=L.
@@ -735,8 +746,8 @@ fitwall(O):-facetowall(O,F),placement(O,W,OP,_),lenw(W,L),dimface(O,F,LF),(OP+LF
 % Avoid overlaping of any two objects.
 :-object(O1),object(O2), placement(O1,_,_,_), placement(O2,_,_,_),overlap(O1,O2).
 % Use maxheight constraints
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP<=E,HO>H.
-:-object(O),facetowall(O,F),placement(O,W,OP,_),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>H.
+:-object(O),contact(O,W,F,OP),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),OP>=S,OP<=E,HO>H.
+:-object(O),contact(O,W,F,OP),maxheight(W,S,E,H),dimface(O,F,LF), size(O,_,_,HO),LO=OP+LF,S>=OP,S<=LO,HO>H.
 
 % Weak constraint.
 % ----------------
