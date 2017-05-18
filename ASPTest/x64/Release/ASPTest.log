@@ -1,8 +1,22 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ASPTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Room.cpp
-..\asplibrary\Room.cpp(61): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\asplibrary\Room.cpp(57): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-..\asplibrary\Room.cpp(191): warning C4101: 'literal1': unreferenced local variable
-..\asplibrary\Room.cpp(190): warning C4101: 'body': unreferenced local variable
-..\asplibrary\Room.cpp(285): warning C4101: 'exception': unreferenced local variable
+..\asplibrary\Room.cpp(58): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+..\asplibrary\Room.cpp(59): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+..\asplibrary\Room.cpp(62): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+..\asplibrary\Room.cpp(65): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+..\asplibrary\Room.cpp(71): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+..\asplibrary\Room.cpp(226): warning C4101: 'literal1': unreferenced local variable
+..\asplibrary\Room.cpp(225): warning C4101: 'body': unreferenced local variable
+..\asplibrary\Room.cpp(316): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+..\asplibrary\Room.cpp(339): warning C4101: 'exception': unreferenced local variable
+  test.cpp
+..\asplibrary\test.cpp(64): warning C4305: 'argument': truncation from 'double' to 'float'
+..\asplibrary\test.cpp(21): warning C4101: 'dummy': unreferenced local variable
   ASPTest.vcxproj -> D:\desarrollo\ue4\ASPPlacement\x64\Release\ASPLibrary.lib

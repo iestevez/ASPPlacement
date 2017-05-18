@@ -2,39 +2,37 @@
 #include "clingo.h"
 #include <iostream>
 // Constructores
-Room::Room(int limit){
+Room::Room(int limit, float rfreq, int seed){
 
-	prepareclingooptions(limit);
+	prepareclingooptions(limit, rfreq, seed);
 
 }
 
 Room::~Room() {
-
-	if (cl_argv[2]) {
-		delete(cl_argv[2]);
-	}
+	for (int i = 0; i < 6; i++)
+		delete *(cl_argv + i);
 	delete(cl_argv);
-
+	
 }
 
-Room::Room(int h, int v, int limit) : dimh(h), dimv(v) {
+Room::Room(int h, int v, int limit, float rfreq, int seed) : dimh(h), dimv(v) {
 
-	prepareclingooptions(limit);
+	prepareclingooptions(limit,rfreq, seed);
 };
 
-Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, int limit){
+Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, int limit, float rfreq, int seed){
 
-	prepareclingooptions(limit);
+	prepareclingooptions(limit,rfreq, seed);
 for(auto& w : wlist)
 	VWalls.push_back(std::move(w));
 
 wlist.erase(wlist.cbegin(),wlist.cend());
 }
 
-Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, std::vector<std::unique_ptr<Worldobject>>& olist, int limit){
+Room::Room(std::vector<std::unique_ptr<Wall>>& wlist, std::vector<std::unique_ptr<Worldobject>>& olist, int limit, float rfreq, int seed){
 
 	
-prepareclingooptions(limit);
+prepareclingooptions(limit, rfreq, seed);
 for(auto& w : wlist)
 	VWalls.push_back(std::move(w));
 
@@ -47,25 +45,62 @@ olist.erase(olist.cbegin(),olist.cend());
 
 }
 
-void Room::prepareclingooptions(int limit) {
-	cl_argv = new (char*[3]);
-	cl_argv[0] = "-t";
-	cl_argv[1] = "2";
-	cl_argv[2] = nullptr;
-	cl_argc = 2;
+void Room::prepareclingooptions(int limit, float rfreq, int seed) {
+	cl_argv = new (char*[6]);
+	*cl_argv = new (char[100]);
+	*(cl_argv + 1) = new (char[100]);
+	*(cl_argv + 2) = new(char[100]);
+	*(cl_argv + 3) = new (char[100]);
+	*(cl_argv + 4) = new (char[100]);
+	*(cl_argv + 5) = new(char[100]);
+
+	strcpy(cl_argv[0],"-t");
+	strcpy(cl_argv[1],"2");
+	strcpy(cl_argv[2],"--sign-def=3");
+	std::string str_rfreq("--rand-freq=");
+	str_rfreq.append(std::to_string(rfreq));
+	strcpy(cl_argv[3], str_rfreq.c_str());
+	std::string str_seed("--seed=");
+	str_seed.append(std::to_string(seed));
+	strcpy(cl_argv[4], str_seed.c_str());
+	cl_argc = 5;
 	if (limit > 0) {
 
 		std::string str_limit("--solve-limit=");
 		str_limit.append(std::to_string(limit));
-		cl_argv[2] = new char [str_limit.length()] ;
-		strcpy(cl_argv[2], str_limit.c_str());
-		cl_argc = 3;
+		strcpy(cl_argv[5], str_limit.c_str());
+		cl_argc = 6;
+	}
+	/*
+	cl_argv = nullptr;
+	cl_argc = 0;
+	cl_argv = new (char*[6]);
+	cl_argv[0] = "-t";
+	cl_argv[1] = "2";
+	cl_argv[2] = "--sign-def=3"; // Default heuristic for sign is changed
+	std::string str_rfreq("--rand-freq=");
+	str_rfreq.append(std::to_string(rfreq));
+	cl_argv[3] = new char[str_rfreq.length()];
+	strcpy(cl_argv[3], str_rfreq.c_str());
+	std::string str_seed("--seed=");
+	str_seed.append(std::to_string(seed));
+	cl_argv[4] = new char[str_seed.length()];
+	strcpy(cl_argv[4], str_seed.c_str());
+	cl_argv[5] = nullptr;
+	cl_argc = 5;
+	if (limit > 0) {
+
+		std::string str_limit("--solve-limit=");
+		str_limit.append(std::to_string(limit));
+		cl_argv[5] = new char [str_limit.length()] ;
+		strcpy(cl_argv[5], str_limit.c_str());
+		cl_argc = 6;
 	}
 
-
 	
 	
-
+	
+	*/
 }
 
 void Room::setdimh(int h) { dimh=h;}
@@ -136,7 +171,7 @@ for(auto& o: VObjects)
 // Second: prepare clingo control
 
 
-if(!clingo_control_new(cl_argv,cl_argc,NULL,NULL,20, &ctl) !=0) 
+if(!clingo_control_new((const char**) cl_argv,cl_argc,NULL,NULL,20, &ctl) !=0) 
 	throw std::runtime_error {"Clingo error: creation of control failed"};
 
 /*
@@ -267,10 +302,29 @@ return result;
 
 }
 
+
 bool Room::on_model(clingo_model_t* model, void* object, bool* goon){
 
 bool ret=true;
 *goon = true;
+bool optimality = false;
+int nobjects=0;
+int64_t cost;
+
+clingo_model_cost(model, &cost, 1);
+
+nobjects = ((Room*)object)->VObjects.size();
+
+// Criterio para decidir sobre la utilización del modelo
+if ((-cost) < nobjects) {
+	
+	return ret;
+}
+	
+*goon = false; // No hay que seguir buscando
+if(!clingo_model_optimality_proven(model, &optimality))
+throw std::runtime_error{ "Clingo error: optimilaty detection error" };
+
 ((Room *)object)->overlapFlag = false; //Initialize to false to detect overlap
 std::cout<<"Modelo encontrado"<<std::endl;
 clingo_symbol_t *atoms = NULL; //Symbols to be retrieved

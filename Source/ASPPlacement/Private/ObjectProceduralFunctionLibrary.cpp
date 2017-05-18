@@ -12,7 +12,7 @@ bool UObjectProceduralFunctionLibrary::StartSession(const int32 val) {
 	return true;
 }
 
-bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, int32 nconflicts, bool &result, bool &overlapFlag,TArray<FSObjectDescription> &newlobjects) {
+bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, int32 nconflicts, float rfreq, int32 seed, bool &result, bool &overlapFlag,TArray<FSObjectDescription> &newlobjects) {
 
 	
 
@@ -93,7 +93,7 @@ bool UObjectProceduralFunctionLibrary::Placement(float unit,float WWidth, float 
 	vwalls.push_back(std::move(pwalld));
 
 	// Creamos la habitación asignándoles muros y objetos a ubicar.
-	Room myroom(vwalls, vobjects,(int)nconflicts);
+	Room myroom(vwalls, vobjects,(int)nconflicts, rfreq, (int)seed);
 
 	// Asignamos dimensiones generales a la habitación
 

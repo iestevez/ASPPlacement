@@ -61,7 +61,7 @@ vobjects.push_back(std::move(pwobj1));
 vobjects.push_back(std::move(pwobj2));
 //vobjects.push_back(std::move(pwobj3));
 
-Room myroom(vwall,vobjects,0);
+Room myroom(vwall,vobjects,0,0.2,1);
 myroom.setdimh(16);
 myroom.setdimv(16);
 myroom.placeObjects();

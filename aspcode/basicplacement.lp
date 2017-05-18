@@ -1,7 +1,7 @@
 wall(a;b;c;d).
 
 %  All wall lengths are equal. 
-dimroom((h;v),16).
+dimroom((h;v),15).
 
 % Wall restricted areas:
 % maxheight/4: wall, start, end, max height
@@ -11,15 +11,17 @@ maxheight(b,2,6,0).
 maxheight(b,11,13,1).
 
 % We have also objects.
+object((n+1)..(n+m)).
 object(1..n).
 
 % Object dimension (all of them are cubes):
 % size/4: object id, hor. length, ver length. height
-size(1..n,2,6,3).
+size(1..(n+m),2,6,3).
 % Object sides that shoud be oriented towards the wall.
 % towall/2: ide object, side
 %towall(1,c).
-towall(1..n,a).
+towall(1..n,b).
+towall((n+1)..(n+m),a).
 
 % --------------------------------------------------------
 % Second section: problem definition (auxiliary, generation and constraints).

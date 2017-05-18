@@ -115,7 +115,7 @@ public:
 		static bool StartSession(const int32 value);
 		
 		UFUNCTION(BlueprintCallable, Category = "Placement")
-	    static  bool Placement(float unit, float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, int32 nconflicts, bool &result, bool &overlapFlag, TArray<FSObjectDescription> &newlobjects );
+	    static  bool Placement(float unit, float WWidth, float RSx,float RSy,TArray<FSObjectDescription> lobjects, TArray<FSWallConstraint> lwctrs, int32 nconflicts, float rfreq, int32 seed, bool &result, bool &overlapFlag, TArray<FSObjectDescription> &newlobjects );
 
 private:
 
