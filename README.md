@@ -1,7 +1,13 @@
 # ASPPlacement
 Experimentos con ASP y Unreal Engine
+------------------------------------
 
-Notas sobre migración de los blueprints a otro proyecto:
+1. Objetivo: Probar librería Clingo para resolución de problemas definidos bajo Answer Set Programming (ASP) en la generación procedural de escenarios en Unreal Engine 4. En particular se trata de la colocación de objetos que deben cumplir condiciones lógicas estrictas.
+
+2. Notas sobre migración de los blueprints a otro proyecto:
+-------------------------------------------------------------
+
+Pasos a realizar en el caso de que se deseen usar las librerías y Blueprints incluidos en este proyecto en otro proyecto de UE4:
 
 1. En el proyecto destino necesitamos que exista al menos un clase C++, para que el editor UE4 cree la estructura adecuada para proyectos con clases C++. Por ejemplo, agregar una clase vacía.
 
@@ -38,15 +44,16 @@ class NOMBRENUEVOPROYECTO UObjectProceduralFunctionLibrary : public UBlueprintFu
 
 11. Abrir el proyecto de destino y abrir el blueprint Roomwithobjects para comprobar que la compilación es correcta.
 
-Notas sobre la preparación de las mallas estáticas.
-
+3. Instrucciones de uso: preparación de las mallas estáticas.
+-------------------------------------------------------------
 1. Hay mallas estáticas correctamente definidas en la carpeta Mesh de Content, con los sockets establecidos.
 2. Las mallas estáticas utilizadas como objetos deben tener definidos tres sockets de nombres Point1, PointF y Point2.
 3. Point1 establece sobre el plano el punto cuyas coordenadas son establecidas por el algoritmo. En una visión "desde arriba", veremos el prisma demarcador del objeto como un rectángulo. Asumiendo un sistema de coordenadas x-y donde el (0,0) está en la esquina superior izquierda de la habitación, con el eje x de izquierda a derecha y el eje y de arriba abajo, Point1 debe marcar la esquina superior izquierda de este rectángulo cuando el objeto no está rotado.
-4. El socket PointF estará en el mizmo plano (igual z que Point1)) de modo que el vector Point1->PointF marca la dirección de la arista inferior de la cara A del objeto. El resto de lados del objeto (B,C,D) se determinan en el sentido de las agujas del reloj.
+4. El socket PointF estará en el mizmo plano (igual z que Point1)) de modo que el vector Point1->PointF marca la dirección de la arista inferior de la cara A del objeto. El resto de lados del objeto (B,C,D) se determinan en el sentido de las agujas del reloj. Importante: el vector Point 1 - Point F debe estar en el plano XY (Z=0) en coordenadas locales de la malla.
 5. Point2, debe marcar el vértice opuesto  a Point1 en el prisma, determinando así (junto con la dirección de la cara A), el volumen del prisma.
 
-Notas sobre la estructura de los blueprint.
+4. Instrucciones de uso: la estructura de los blueprints.
+--------------------------------------------------------
 
 1. El blueprint Floor como clase padre de RoomFromFloor y este último es el padre de Roomwithobjects.
 2. En Floor hay un grafo de construcción que permite crear un suelo parametrizado a partir de NxM zócalos, con iluminación y techo opcional.
@@ -66,7 +73,17 @@ Notas sobre la estructura de los blueprint.
 16. CorrectSMComponent rota el objeto y luego lo situa teniendo en cuenta que el pivote de la malla (usado por UE4 como referencia para establecer la posición) no tiene que coincidir necesariamente con la esquina tomada como referencia.
 17. CalculateFaceToWall. Simplemente calcula la cara que queda contra la pared.
 
-15. 
+5. Control del algoritmo de búsqueda de soluciones ASP.
+-------------------------------------------------------
+
+En la categoría Placement Algorithm del blueprint Roomwithobjects, podemos encontrar algunos parámetros para controlar el algoritmo.
+
+1. Automatic Generation: Si se marca, el algoritmo se ejecutará al actualizar el blueprint. Se tratará de ubicar la lista de objetos en la habitación teniendo en cuenta las restricciones.
+2. Solve Limit Conflicts: Establece un número máximo de "conflictos" procesados por el algoritmo. Sirve para establecer un límite a la ejecución de la búsqueda. Si se sobrepasa el límite de conflictos establecido aquí, y el número de objetos ubicados es menor que el número de objetos, todos los objetos son marcados como "No ubicables" y la búsqueda termina. En ese caso no aparecerá ningún objeto en la habitación.
+3. Random frequency: Se trata de un número entr 0.0 y 1.0. El algoritmo de búsqueda utiliza una heurística por defecto para decidir la asignación de verdad de las variables booleanas en el problema. Random frequency es la probabilidad con la que esta heurística no se aplica y la asignación de verdad de la variable se realiza a partir de un experimento aleatorio.
+4. Seed: Semilla en la generación pseudoaleatoria.
+
+Con los parámetros Random frequency y seed podemos generar soluciones aleatorias que cumplan con las restricciones impuestas.
 
 
 TODO:
